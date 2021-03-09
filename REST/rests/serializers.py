@@ -23,3 +23,36 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ['id','date_birth','date_death','country','bio','name','books']
 
 
+    def create(self,validated_data):
+        books_data = validated_data.pop('books')
+        author = Author.objects.create(**validated_data)
+        for book in books_data:
+            Book.objects.create(author=author,**book)
+        return author
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    # book = serializers.StringRelatedField()
+    status = serializers.CharField(read_only=True)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # total = 0
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'address','book','quantity','data','status']
+
+
+
+
+class ContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Contact
+        fields = ['id','types','info']
+
+
+
+class BranchSerializer(serializers.ModelSerializer):
+    contacts = ContactSerializer(many=True)
+    class Meta:
+        model = Branch
+        fields = ['id','name','contacts']
