@@ -10,10 +10,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-
+    author = serializers.StringRelatedField()
     class Meta:
         model = Book
-        fields = ['id','title','description','year']
+        fields = ['id','title','price','year','author']
 
 
 class AuthorSerializer(serializers.ModelSerializer):
