@@ -13,7 +13,8 @@ class BookSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
     class Meta:
         model = Book
-        fields = ['id','title','price','year','author']
+        fields = ['id','title','price','year','author','abbr']
+
 
 
 class AuthorSerializer(serializers.ModelSerializer):

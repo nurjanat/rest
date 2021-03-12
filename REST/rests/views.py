@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from .serializers import *
 from rest_framework import views
 # Create your views here.
@@ -130,3 +130,14 @@ class ContactAPIView(views.APIView):
             return Response(serializer.data)
 
 
+
+
+class BookDemoView(views.APIView):
+
+    def get(self,request,*args,**kwargs):
+        try:
+            book = Book.objects.get(abbr=kwargs['abbr'])
+        except Book.DoesNotExist:
+            return Response({'data':'Book not found'},status=status.HTTP_404_NOT_FOUND)
+        demo = book.book_file.open()
+        return Response({'demo':demo.read()[:5]})
