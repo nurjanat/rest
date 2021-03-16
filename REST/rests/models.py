@@ -12,6 +12,9 @@ class Book(models.Model):
     book_file = models.FileField(blank=True)
     author = models.ForeignKey('Author',on_delete=models.SET_NULL,null=True,related_name='books')
     price = models.PositiveIntegerField(default=0)
+    sale = models.BooleanField(default=False)
+    sale_amount = models.PositiveIntegerField()
+
 
 
     def __str__(self):
