@@ -14,7 +14,10 @@ class Book(models.Model):
     price = models.PositiveIntegerField(default=0)
     sale = models.BooleanField(default=False)
     sale_amount = models.PositiveIntegerField()
-
+    payment_type = models.CharField(choices=(
+        ('card','card'),
+        ('cash','cash'),
+    ),max_length=90,default='cash')
 
 
     def __str__(self):
