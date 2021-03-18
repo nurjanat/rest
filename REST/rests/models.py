@@ -14,10 +14,7 @@ class Book(models.Model):
     price = models.PositiveIntegerField(default=0)
     sale = models.BooleanField(default=False)
     sale_amount = models.PositiveIntegerField()
-    payment_type = models.CharField(choices=(
-        ('card','card'),
-        ('cash','cash'),
-    ),max_length=90,default='cash')
+
 
 
     def __str__(self):
@@ -45,11 +42,15 @@ class Order(models.Model):
     )
     user = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
     book = models.ForeignKey('Book',on_delete=models.SET_NULL,null=True,)
-    address = models.CharField(max_length=900)
+    address = models.CharField(max_length=900,null=True)
     quantity = models.PositiveIntegerField()
     data = models.DateTimeField(auto_now_add=True)
     status = models.CharField(choices=statuses,max_length=20,default='pending')
     total_sum = models.PositiveIntegerField(default=0)
+    payment_type = models.CharField(choices=(
+        ('card', 'card'),
+        ('cash', 'cash'),
+    ), max_length=90, default='cash')
 
 
 

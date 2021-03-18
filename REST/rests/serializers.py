@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
 from .models import *
 
 class UserSerializer(serializers.ModelSerializer):
@@ -41,15 +43,26 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'address','book','quantity','data','status','total_price']
+        fields = ['id', 'user', 'address','book','quantity','data','status','total_price','payment_type']
 
     def get_total_price(self,obj):
 
         total_price = 0
         try:
             total_price += obj.quantity * obj.book.price
+            if obj.address is None:
+                obj.address = obj.user.profile.address
             obj.total_price = total_price
-            obj.save()
+            if obj.payment_type == 'card':
+                if obj.user.profile.wallet >= total_price:
+                    obj.user.profile.wallet -= total_price
+                    obj.user.profile.save()
+                    obj.save()
+                else:
+                    obj.delete()
+                    raise ValidationError('Not Enough money!')
+            else:
+                obj.save()
             return total_price
         except AttributeError:
             return 0
@@ -79,3 +92,7 @@ class BranchSerializer(serializers.ModelSerializer):
         for contact in contacts_data:
             Contact.objects.create(branch=branch,**contact)
         return branch
+
+
+
+

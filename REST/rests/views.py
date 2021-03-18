@@ -1,9 +1,11 @@
+from django.utils import timezone
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from .serializers import *
 from rest_framework import views
+from datetime import date
 # Create your views here.
 
 class UserView(views.APIView):
@@ -67,13 +69,21 @@ class OrderAPIView(views.APIView):
 
 class ModifyOrder(views.APIView):
 
- def put(self,request,*args,**kwargs):
-     order = Order.objects.get(id=kwargs['order_id'])
-     serializer = OrderSerializer(order,data=request.data)
-     if serializer.is_valid():
-         serializer.save()
-         return Response({'data':'ok'})
-     return Response(serializer.errors)
+    def put(self,request,*args,**kwargs):
+        order = Order.objects.get(id=kwargs['order_id'])
+        hours = timezone.now().hour * 60 # hours converted to minutes
+        minutes = timezone.now().minute #minutes
+        result1 = hours + minutes
+        result2 = (order.data.hour * 60) + order.data.minute
+        serializer = OrderSerializer(order,data=request.data)
+        print()
+        if serializer.is_valid():
+            if abs(result1 - result2) <= 5:
+                serializer.save()
+                return Response({'data':'ok'})
+            else:
+                return Response({"data":"Time is up!"})
+        return Response(serializer.errors)
 
 
 
