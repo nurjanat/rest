@@ -39,11 +39,22 @@ class OrderSerializer(serializers.ModelSerializer):
     status = serializers.CharField(read_only=True)
     # user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     total_price = serializers.SerializerMethodField()
-
+    promo = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'address','book','quantity','data','status','total_price','payment_type']
+        fields = ['id', 'user', 'address','book','quantity','data','status',
+                  'total_price','payment_type','promocode','promo']
+
+
+    def get_promo(self,obj):
+        promocode = 'nurja'
+        if obj.promocode == promocode:
+            obj.total_sum -= 100
+            obj.save()
+
+
+
 
     def get_total_price(self,obj):
 
@@ -52,7 +63,7 @@ class OrderSerializer(serializers.ModelSerializer):
             total_price += obj.quantity * obj.book.price
             if obj.address is None:
                 obj.address = obj.user.profile.address
-            obj.total_price = total_price
+            obj.total_sum = total_price
             if obj.payment_type == 'card':
                 if obj.user.profile.wallet >= total_price:
                     obj.user.profile.wallet -= total_price
