@@ -6,6 +6,8 @@ from rest_framework import viewsets, status
 from .serializers import *
 from rest_framework import views
 from datetime import date
+from rest_framework import filters
+from rest_framework import permissions
 # Create your views here.
 
 class UserView(views.APIView):
@@ -20,9 +22,12 @@ class UserView(views.APIView):
 
 
 class BookView(viewsets.ModelViewSet):
+    permissions_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-
+    filter_backends = [filters.SearchFilter,filters.OrderingFilter]
+    search_fields = ['title']
+    ordering_fields = ['title','price']
 
     # def get(self,request,*args,**kwargs):
     #     books = Book.objects.all()
@@ -55,11 +60,7 @@ class AuthorView(views.APIView):
 
 
 class OrderAPIView(views.APIView):
-    def get(self, request, *args, **kwargs):
-        orders = Order.objects.all()
 
-        serializer = OrderSerializer(orders, many=True)
-        return Response(serializer.data)
 
     def post(self,request,*args,**kwargs):
         serializer = OrderSerializer(data=request.data)
