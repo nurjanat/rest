@@ -42,7 +42,7 @@ class Order(models.Model):
     )
     user = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
     book = models.ForeignKey('Book',on_delete=models.SET_NULL,null=True,)
-    address = models.CharField(max_length=900,null=True)
+    address = models.CharField(max_length=900,null=True,blank=True)
     quantity = models.PositiveIntegerField()
     data = models.DateTimeField(auto_now_add=True)
     status = models.CharField(choices=statuses,max_length=20,default='pending')
@@ -51,7 +51,7 @@ class Order(models.Model):
         ('card', 'card'),
         ('cash', 'cash'),
     ), max_length=90, default='cash')
-
+    promocode = models.CharField(max_length=5,null=True,blank=True)
 
 
 
